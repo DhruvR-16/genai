@@ -1,0 +1,10 @@
+spacy
+gensim
+scikit-learn
+streamlit
+networkx
+numpy
+matplotlib
+wordcloud
+tqdm
+arxiv
