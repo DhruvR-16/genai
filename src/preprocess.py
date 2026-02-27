@@ -19,16 +19,16 @@ RAW_DOCS_PATH = os.path.join(PROCESSED_DIR, "raw_docs.pkl")
 
 
 ARXIV_QUERIES = [
-    "cat:cs.AI",               # Artificial Intelligence
-    "cat:cs.CV",               # Computer Vision
-    "cat:physics.gen-ph",      # General Physics
-    "cat:q-bio.BM",            # Biomolecules
-    "cat:q-bio.NC",            # Neuroscience
-    "cat:econ.GN",             # General Economics
-    "cat:q-fin.ST",            # Statistical Finance
-    "cat:math.CO",             # Combinatorics
-    "cat:stat.ML",             # Machine Learning
-    "cat:astro-ph.GA"          # Astrophysics
+    "cat:cs.AI",              
+    "cat:cs.CV",              
+    "cat:physics.gen-ph",      
+    "cat:q-bio.BM",            
+    "cat:q-bio.NC",            
+    "cat:econ.GN",            
+    "cat:q-fin.ST",            
+    "cat:math.CO",            
+    "cat:stat.ML",            
+    "cat:astro-ph.GA"          
 ]
 PAPERS_PER_QUERY = 30
 
@@ -171,7 +171,6 @@ def main():
 
     print(f"Loaded {len(raw_documents)} documents")
 
-    # Save raw documents for UI display and summarization
     save_processed_data(raw_documents, RAW_DOCS_PATH)
 
     print("\nStarting preprocessing...")
