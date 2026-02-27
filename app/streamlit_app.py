@@ -319,26 +319,6 @@ with tab1:
         plt.tight_layout()
         st.pyplot(fig)
 
-    with col_right:
-        st.subheader("☁️ Word Cloud")
-        all_tokens  = [token for doc in data["clean_docs"] for token in doc]
-        token_freq  = Counter(all_tokens)
-
-        wc = WordCloud(
-            width=800,
-            height=600,
-            background_color="white",
-            colormap="viridis",
-            max_words=100,
-            contour_width=2,
-            contour_color="#667eea"
-        ).generate_from_frequencies(token_freq)
-
-        fig2, ax2 = plt.subplots(figsize=(10, 8))
-        ax2.imshow(wc, interpolation="bilinear")
-        ax2.axis("off")
-        plt.tight_layout()
-        st.pyplot(fig2)
 
     st.subheader("📏 Document Length Distribution")
     col_a, col_b = st.columns(2)
@@ -490,21 +470,6 @@ with tab3:
             )
             st.progress(float(norm))
 
-    with col2:
-        st.subheader("☁️ TF-IDF Keyword Cloud")
-        kw_freq = {w: s for w, s in global_kw}
-        wc2 = WordCloud(
-            width=700, height=500,
-            background_color="white",
-            colormap="plasma",
-            max_words=50
-        ).generate_from_frequencies(kw_freq)
-
-        fig6, ax6 = plt.subplots(figsize=(8, 6))
-        ax6.imshow(wc2, interpolation="bilinear")
-        ax6.axis("off")
-        plt.tight_layout()
-        st.pyplot(fig6)
 
     st.markdown("---")
     st.subheader("🏷️ Keywords by Topic (Top 10 each)")
@@ -539,8 +504,6 @@ with tab4:
     col_btn, col_tip = st.columns([1, 4])
     with col_btn:
         search_clicked = st.button("🚀 Analyze", type="primary")
-    with col_tip:
-        st.caption("Hint: use domain-specific terms for better results, e.g. 'transformer attention mechanism' or 'CRISPR gene editing'")
 
     if search_clicked:
 
