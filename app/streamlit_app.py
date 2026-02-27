@@ -85,14 +85,15 @@ st.markdown("""
     .main-header {
         font-size: 2.4rem;
         font-weight: 800;
-        color: #1a1a2e;
+        color: var(--text-color);
         text-align: center;
         padding: 0.6rem 0 0.2rem 0;
         letter-spacing: -0.5px;
     }
     .sub-header {
         font-size: 1.0rem;
-        color: #666;
+        color: var(--text-color);
+        opacity: 0.8;
         text-align: center;
         margin-bottom: 1.8rem;
     }
@@ -111,7 +112,7 @@ st.markdown("""
 
     /* ---- Topic cards ---- */
     .topic-card {
-        background: #f8f9fa;
+        background: var(--secondary-background-color);
         border-left: 5px solid #667eea;
         padding: 1rem 1.2rem;
         border-radius: 0 10px 10px 0;
@@ -122,8 +123,8 @@ st.markdown("""
     /* ---- Keyword badge ---- */
     .keyword-badge {
         display: inline-block;
-        background: #e8eaf6;
-        color: #3f51b5;
+        background: var(--primary-color);
+        color: white;
         padding: 0.25rem 0.75rem;
         border-radius: 20px;
         margin: 0.2rem;
@@ -133,8 +134,8 @@ st.markdown("""
 
     /* ---- Result cards with rank color coding ---- */
     .result-card {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
+        background: var(--secondary-background-color);
+        border: 1px solid var(--secondary-background-color);
         border-radius: 12px;
         padding: 1rem 1.3rem;
         margin-bottom: 1rem;
@@ -150,7 +151,7 @@ st.markdown("""
 
     /* ---- Score badges ---- */
     .score-badge {
-        background: #e8f5e9;
+        background: rgba(46, 125, 50, 0.2);
         color: #2e7d32;
         padding: 0.2rem 0.7rem;
         border-radius: 12px;
@@ -176,13 +177,14 @@ st.markdown("""
 
     /* ---- Summary sentences ---- */
     .summary-item {
-        background: #f1f8e9;
+        background: var(--secondary-background-color);
         border-left: 4px solid #66bb6a;
         padding: 0.7rem 1rem;
         border-radius: 0 8px 8px 0;
         margin-bottom: 0.6rem;
         font-size: 0.93rem;
         line-height: 1.6;
+        color: var(--text-color);
     }
     .summary-num {
         font-weight: 700;
@@ -212,10 +214,11 @@ st.markdown("""
     .kw-rank {
         min-width: 2rem;
         font-weight: 700;
-        color: #555;
+        color: var(--text-color);
+        opacity: 0.8;
     }
     .kw-name { flex: 1; font-weight: 500; }
-    .kw-score { min-width: 4rem; text-align: right; color: #888; font-size: 0.8rem; }
+    .kw-score { min-width: 4rem; text-align: right; color: var(--text-color); opacity: 0.6; font-size: 0.8rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -433,7 +436,7 @@ with tab2:
         st.markdown(f"""
         <div class="topic-card">
             <strong>🗂 Topic {topic_id + 1}</strong>
-            &nbsp;&nbsp;<small style="color:#888;">Top 8 keywords by LDA weight</small><br><br>
+            &nbsp;&nbsp;<small style="opacity:0.7;">Top 8 keywords by LDA weight</small><br><br>
             {badges}
         </div>""", unsafe_allow_html=True)
 
@@ -526,7 +529,7 @@ with tab4:
     with st.sidebar:
         st.markdown("### ⚙️ Search Settings")
         top_k_slider = st.slider("Number of results", min_value=3, max_value=10, value=5, step=1)
-        summary_n = st.slider("Summary sentences", min_value=3, max_value=8, value=5, step=1)
+        summary_n = st.slider("Extracted sentences per paper", min_value=1, max_value=4, value=2, step=1)
 
     query = st.text_input(
         "🔎 Enter a research query",
@@ -578,6 +581,7 @@ with tab4:
 
         for i, (doc, score) in enumerate(zip(docs, scores)):
             medal      = medals.get(i, "📄")
+            rank_class = {0: "rank-1", 1: "rank-2", 2: "rank-3"}.get(i, "rank-other")
             preview    = doc[:280] + "…" if len(doc) > 280 else doc
 
             st.markdown(f"""
@@ -587,7 +591,7 @@ with tab4:
                     <strong>Rank #{i+1}</strong>
                     <span class="score-badge">TF-IDF Score {score:.4f}</span>
                 </div>
-                <div style="margin-top:0.5rem;color:#444;font-size:0.88rem;line-height:1.55;">
+                <div style="margin-top:0.5rem;opacity:0.9;font-size:0.88rem;line-height:1.55;">
                     {preview}
                 </div>
             </div>""", unsafe_allow_html=True)
@@ -598,23 +602,23 @@ with tab4:
         st.markdown("---")
 
         # ── Summary ──
-        with st.spinner("Generating extractive summary…"):
-            summary, _ = summarize_query(query, top_k_docs=top_k_slider)
-            # limit to user-chosen number of sentences
-            summary = summary[:summary_n]
+        with st.spinner("Extracting key sentences from each document…"):
+            summary_items, _ = summarize_query(query, top_k_docs=top_k_slider, sentences_per_doc=summary_n)
 
-        st.subheader(f"📝 Extractive Research Summary ({len(summary)} sentences)")
-        st.caption("Sentences are selected by **TextRank** — PageRank on TF-IDF similarity graph, returned in document reading order.")
+        st.subheader(f"📝 Extractive Highlights ({len(summary_items)} sentences total)")
+        st.markdown(
+            "💡 **Note on Summarization:** These are *extractive* highlights. The algorithm (TextRank) mathematically identifies and pulls out the most central sentences directly from the source text. It does not read and re-write the text like a Large Language Model (Abstractive Summarization) does."
+        )
 
-        if summary:
-            for i, sentence in enumerate(summary):
-                medal = medals.get(i, f"#{i+1}")
+        if summary_items:
+            for item in summary_items:
+                medal = medals.get(item['rank'] - 1, f"📄")
                 st.markdown(f"""
                 <div class="summary-item">
-                    <span class="summary-num">{medal}</span>{sentence}
+                    <span class="summary-num">{medal} Rank #{item['rank']}</span> {item['sentence']}
                 </div>""", unsafe_allow_html=True)
         else:
-            st.info("No summary could be generated for this query — try broadening the search terms.")
+            st.info("No highlights could be extracted for this query — try broadening the search terms.")
 
 # ───────────────────────────────────────────────────────────────────────────
 # SIDEBAR — About
