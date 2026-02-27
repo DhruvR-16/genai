@@ -19,18 +19,24 @@ RAW_DOCS_PATH = os.path.join(PROCESSED_DIR, "raw_docs.pkl")
 
 
 ARXIV_QUERIES = [
-    "cat:cs.AI",              
-    "cat:cs.CV",              
-    "cat:physics.gen-ph",      
-    "cat:q-bio.BM",            
-    "cat:q-bio.NC",            
-    "cat:econ.GN",            
-    "cat:q-fin.ST",            
-    "cat:math.CO",            
-    "cat:stat.ML",            
-    "cat:astro-ph.GA"          
+    "cat:cs.AI",              # Artificial Intelligence
+    "cat:cs.CV",              # Computer Vision
+    "cat:cs.LG",              # Machine Learning
+    "cat:cs.CL",              # Computation and Language
+    "cat:cs.CR",              # Cryptography and Security
+    "cat:physics.gen-ph",     # General Physics
+    "cat:quant-ph",           # Quantum Physics
+    "cat:q-bio.BM",           # Biomolecules
+    "cat:q-bio.NC",           # Neurons and Cognition
+    "cat:econ.GN",            # General Economics
+    "cat:q-fin.ST",           # Statistical Finance
+    "cat:math.CO",            # Combinatorics
+    "cat:math.PR",            # Probability
+    "cat:stat.ML",            # Machine Learning (Stat)
+    "cat:astro-ph.GA"         # Astrophysics of Galaxies
 ]
-PAPERS_PER_QUERY = 30
+PAPERS_PER_QUERY = 70
+
 
 ALLOWED_POS = ["NOUN", "PROPN", "ADJ"]
 MIN_TOKEN_LENGTH = 3

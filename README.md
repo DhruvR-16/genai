@@ -1,6 +1,6 @@
 # 📚 Intelligent Research Topic Analysis System
 
-An NLP-powered research analysis system that dynamically processes **100 recent ArXiv research papers** across diverse scientific disciplines (AI, Physics, Biology, Economics, Math). It extracts topics, keywords, and generates extractive summaries using traditional machine learning techniques.
+An NLP-powered research analysis system that dynamically processes **over 1,000 recent ArXiv research papers** across 15 diverse scientific disciplines (AI, Physics, Biology, Economics, Math, Astrophysics, etc.). It extracts topics, keywords, and generates extractive summaries using traditional machine learning techniques (TF-IDF, TextRank, LDA).
 
 ---
 
@@ -41,7 +41,7 @@ python -m spacy download en_core_web_sm
 Run the pipeline scripts in the following order:
 
 ```bash
-# 1. Fetch 100 ArXiv papers and preprocess them
+# 1. Fetch 1,000+ ArXiv papers and preprocess them
 python src/preprocess.py
 
 # 2. Build TF-IDF features
@@ -82,5 +82,20 @@ The app will open at `http://localhost:8501` featuring:
 **Universal ArXiv Dataset**
 
 - Source: ArXiv API (via `arxiv` python package)
-- Papers dynamically fetched: 100 total
-- Disciplines covered: `cs.AI` (Artificial Intelligence), `physics.gen-ph` (Physics), `q-bio.BM` (Biomolecules), `econ.GN` (Economics), `math.CO` (Combinatorics).
+- Papers dynamically fetched: ~1,050 total (70 papers per topic, deduplicated)
+- Disciplines covered:
+  - `cs.AI` (Artificial Intelligence)
+  - `cs.CV` (Computer Vision)
+  - `cs.LG` (Machine Learning)
+  - `cs.CL` (Computation and Language)
+  - `cs.CR` (Cryptography and Security)
+  - `physics.gen-ph` (General Physics)
+  - `quant-ph` (Quantum Physics)
+  - `q-bio.BM` (Biomolecules)
+  - `q-bio.NC` (Neurons and Cognition)
+  - `econ.GN` (General Economics)
+  - `q-fin.ST` (Statistical Finance)
+  - `math.CO` (Combinatorics)
+  - `math.PR` (Probability)
+  - `stat.ML` (Machine Learning - Stat)
+  - `astro-ph.GA` (Astrophysics of Galaxies)
