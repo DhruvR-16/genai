@@ -244,12 +244,15 @@ The project is deployed using:
 
 ## Team Contribution
 
-| Team Member | Contribution                    |
-| ----------- | ------------------------------- |
-| Akhilesh Kumar   | Data ingestion & preprocessing  |
-| Dhruv Ramani   | TF-IDF retrieval implementation |
-| Lakshya Agarwal  | LDA topic modeling              |
-| Kavya Jain   | TextRank summarization & UI     |
+## 👥 Team Contribution
+
+| Team Member         | Primary Responsibilities                                                  | Supporting Contributions                                |
+| ------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Akhilesh Kumar**  | Data ingestion using arXiv API and preprocessing pipeline development     | Dataset validation, preprocessing optimization, testing |
+| **Dhruv Ramani**    | TF-IDF based document retrieval and TextRank summarization implementation | System integration, NLP pipeline design                 |
+| **Lakshya Agarwal** | LDA topic modeling and topic analysis                                     | Model tuning, evaluation and visualization support      |
+| **Kavya Jain**      | Streamlit UI development and project documentation                        | Interface integration, testing, deployment setup        |
+
 
 ---
 
