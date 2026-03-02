@@ -63,7 +63,6 @@ def main():
     print("Extracting per-topic keywords...")
     topic_keywords = get_topic_keywords(lda_model)
 
-    # Save combined keywords
     keywords_data = {
         "global_tfidf": global_keywords,
         "topic_keywords": topic_keywords
@@ -82,7 +81,7 @@ def main():
         top_words = ", ".join(w for w, _ in words[:5])
         print(f"  Topic {topic_id}: {top_words}")
 
-    print("\nKeyword extraction complete!")
+    print("extraction complete")
 
 
 if __name__ == "__main__":

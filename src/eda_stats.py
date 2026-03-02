@@ -28,12 +28,12 @@ def compute_stats(raw_docs, clean_docs):
     clean_lengths = [len(doc) for doc in clean_docs]
     avg_clean_length = sum(clean_lengths) / len(clean_lengths)
 
-    # Vocabulary
+    # vocabulary
     all_tokens = [token for doc in clean_docs for token in doc]
     vocab = set(all_tokens)
     total_tokens = len(all_tokens)
 
-    # Token frequency distribution
+    # token frequency distribution
     token_freq = Counter(all_tokens)
     top_tokens = token_freq.most_common(50)
 
@@ -52,7 +52,7 @@ def compute_stats(raw_docs, clean_docs):
 
 def main():
 
-    print("\nLoading data...")
+    print("\nLoading data")
     raw_docs = load_pickle(RAW_DOCS_PATH)
     clean_docs = load_pickle(CLEAN_DOCS_PATH)
 
@@ -69,12 +69,6 @@ def main():
     print(f"  Avg clean tokens:   {stats['avg_clean_token_count']}")
     print(f"  Vocabulary size:    {stats['vocabulary_size']}")
     print(f"  Total tokens:       {stats['total_tokens']}")
-
-    print(f"\nTop 10 Tokens:")
-    for token, count in stats['top_50_tokens'][:10]:
-        print(f"  {token:25s} {count}")
-
-    print("\nEDA stats saved!")
 
 
 if __name__ == "__main__":

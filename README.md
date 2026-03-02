@@ -1,101 +1,291 @@
-# 📚 Intelligent Research Topic Analysis System
+# Research Topic Analysis & Summarization System
 
-An NLP-powered research analysis system that dynamically processes **over 1,000 recent ArXiv research papers** across 15 diverse scientific disciplines (AI, Physics, Biology, Economics, Math, Astrophysics, etc.). It extracts topics, keywords, and generates extractive summaries using traditional machine learning techniques (TF-IDF, TextRank, LDA).
+### Traditional NLP-Based Research Paper Analyzer
 
 ---
 
-## 🏗️ System Architecture
+## Problem Statement
 
-The project has been simplified into a flattened, focused structure:
+The rapid growth of academic research publications makes it difficult for researchers and students to efficiently understand developments within a specific domain. Manually reading multiple research papers to extract key insights is time-consuming and inefficient.
 
-```text
-genai_copy/
-├── app/
-│   └── streamlit_app.py      # Interactive Web UI (4 main tabs)
-├── src/
-│   ├── preprocess.py         # Text cleaning, LaTeX removal, tokenization
-│   ├── tfidf.py              # TF-IDF feature vectorization
-│   ├── topic_model.py        # LDA topic modeling + coherence optimization
-│   ├── textrank_summary.py   # TextRank extractive summarization
-│   ├── keyword_extractor.py  # Global and per-topic keyword extraction
-│   ├── query_summarizer.py   # Query-based search + summary summarization
-│   ├── search.py             # TF-IDF cosine similarity search engine
-│   └── eda_stats.py          # Corpus exploratory data analysis logic
-├── data/
-│   └── processed/            # Generated .pkl data files
-├── requirements.txt          # Python dependencies
-└── README.md
+This project addresses the challenge of automatically **retrieving, analyzing, and summarizing research papers** related to a user-defined topic using **traditional Natural Language Processing (NLP)** techniques.
+
+The developed system acts as an **intelligent research assistant** that:
+
+* Retrieves relevant academic papers
+* Identifies dominant research themes
+* Generates concise extractive summaries
+* Presents insights through an interactive web interface
+
+The project strictly avoids Large Language Models (LLMs) and instead relies on explainable statistical NLP methods.
+
+---
+
+## Data Description
+
+### Data Source
+
+Research papers are dynamically collected using the **arXiv API**, ensuring access to real-world academic literature across multiple domains:
+
+* Artificial Intelligence (cs.AI)
+* Physics (physics.gen-ph)
+* Mathematics (math.CO)
+* Economics (econ.GN)
+* Quantitative Biology (q-bio.BM)
+
+---
+
+### Dataset Features
+
+Each document consists of:
+
+* Research Paper Title
+* Research Paper Abstract
+
+The final document representation used in analysis is:
+
+```
+Title + Abstract
+```
+
+Abstracts are used instead of full PDFs because they contain dense research information while significantly reducing computational complexity.
+
+---
+
+### Stored Data Artifacts
+
+```
+data/
+ ├── raw_docs.pkl
+ ├── clean_docs.pkl
+ ├── tfidf_vectorizer.pkl
+ ├── tfidf_matrix.pkl
+ └── lda_model.pkl
 ```
 
 ---
 
-## 🚀 Running the Pipeline
+## Exploratory Data Analysis (EDA)
 
-Make sure you have your virtual environment activated and dependencies installed:
+Exploratory analysis was conducted to understand corpus characteristics:
 
-```bash
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
+* Vocabulary distribution across domains
+* Average tokens per research paper
+* Frequent domain-specific keywords
+* Topic diversity within collected papers
+
+### Key Observations
+
+* Research titles strongly influence topic similarity.
+* Abstracts provide sufficient semantic information.
+* Common academic terms are automatically suppressed using TF-IDF weighting.
+* Domain keywords dominate topic formation.
+
+These insights validated the use of statistical NLP techniques for analysis.
+
+---
+
+## Methodology
+
+The system follows a structured end-to-end NLP pipeline.
+
+---
+
+### 1️⃣ Data Ingestion
+
+* Papers fetched using arXiv API
+* Multi-domain corpus construction
+* Duplicate paper removal
+* Automated dataset generation
+
+---
+
+### 2️⃣ Text Preprocessing
+
+Performed using **spaCy NLP pipeline**:
+
+* Lowercase normalization
+* Stopword removal
+* Lemmatization
+* Punctuation removal
+* Citation & LaTeX noise removal
+* POS filtering (NOUN, PROPN, ADJ)
+
+Purpose:
+Improve semantic quality and remove linguistic noise.
+
+---
+
+### 3️⃣ TF-IDF Vectorization
+
+TF-IDF converts documents into numerical vectors based on:
+
+* **Term Frequency (TF)** – importance within a document
+* **Inverse Document Frequency (IDF)** – rarity across corpus
+
+TF-IDF is used twice:
+
+1. Document similarity for query-based retrieval
+2. Sentence similarity for summarization
+
+Reason:
+Provides interpretable statistical representation without deep learning models.
+
+---
+
+### 4️⃣ Query-Based Document Retrieval
+
+When a user enters a research topic:
+
+1. Query is transformed using trained TF-IDF vectorizer
+2. Cosine similarity is computed
+3. Top-K relevant papers are selected
+
+This ensures focused topic analysis instead of processing the entire dataset.
+
+---
+
+### 5️⃣ Topic Modeling — LDA
+
+Latent Dirichlet Allocation (LDA) identifies hidden thematic structures within research papers.
+
+Output:
+
+* Topic clusters
+* Dominant keywords per topic
+
+Purpose:
+Reveal conceptual research trends automatically.
+
+---
+
+### 6️⃣ Extractive Summarization — TextRank
+
+TextRank is a graph-based ranking algorithm inspired by Google PageRank.
+
+#### Process:
+
+1. Retrieved documents are combined
+2. Text is split into sentences
+3. Sentences converted into TF-IDF vectors
+4. Sentence similarity matrix computed
+5. Similarity graph constructed
+6. PageRank algorithm applied
+7. Highest-ranked sentences selected
+8. Sentences reordered for readability
+
+Final output:
+A coherent extractive summary representing core research insights.
+
+---
+
+## Evaluation Strategy
+
+Since this project performs **analysis and summarization rather than prediction**, traditional metrics such as Accuracy, F1-score, MAE, or RMSE are not applicable.
+
+Evaluation is performed using:
+
+* Retrieval relevance inspection
+* Topic interpretability analysis
+* Summary coherence validation
+* Runtime efficiency assessment
+
+Results demonstrate effective topic discovery and meaningful summary generation.
+
+---
+
+## Optimization Techniques
+
+Performance improvements include:
+
+* Abstract-only processing
+* Dataset size control
+* Duplicate removal
+* spaCy batch processing (`nlp.pipe`)
+* Precomputed TF-IDF matrices
+* Streamlit caching mechanisms
+
+These optimizations improve speed, scalability, and deployment stability.
+
+---
+
+## System Architecture
+
 ```
-
-Run the pipeline scripts in the following order:
-
-```bash
-# 1. Fetch 1,000+ ArXiv papers and preprocess them
-python src/preprocess.py
-
-# 2. Build TF-IDF features
-python src/tfidf.py
-
-# 3. Train the LDA topic model (automatically optimizes topic count)
-python src/topic_model.py
-
-# 4. Generate extractive summaries using TextRank
-python src/textrank_summary.py
-
-# 5. Extract global and per-topic keywords
-python src/keyword_extractor.py
-
-# 6. Compute statistics for EDA UI
-python src/eda_stats.py
+arXiv API
+     ↓
+Data Preprocessing
+     ↓
+TF-IDF Vectorization
+     ↓
+User Query Input
+     ↓
+Cosine Similarity Retrieval
+     ↓
+Relevant Documents
+     ↓
+LDA Topic Modeling
+     ↓
+TextRank Summarization
+     ↓
+Streamlit Web Interface
 ```
 
 ---
 
-## 🖥️ Launching the UI
+## Deployment
 
-```bash
-streamlit run app/streamlit_app.py
-```
+The project is deployed using:
 
-The app will open at `http://localhost:8501` featuring:
-
-1. **🔍 Search & Summary** — Query-based document retrieval + extractive natural sentence summary
-2. **📊 EDA & Preprocessing** — Corpus statistics, word cloud, token frequency
-3. **🧠 Topic Modeling** — LDA topics, coherence metrics, top keywords
-4. **🔑 Keyword Extraction** — TF-IDF keywords, per-topic keywords
+✅ Streamlit Cloud / Hugging Face Spaces
+(Add live deployment URL here)
 
 ---
 
-## 📁 Dataset
+## Team Contribution
 
-**Universal ArXiv Dataset**
+| Team Member | Contribution                    |
+| ----------- | ------------------------------- |
+| Akhilesh Kumar   | Data ingestion & preprocessing  |
+| Dhruv Ramani   | TF-IDF retrieval implementation |
+| Lakshya Agarwal  | LDA topic modeling              |
+| Kavya Jain   | TextRank summarization & UI     |
 
-- Source: ArXiv API (via `arxiv` python package)
-- Papers dynamically fetched: ~1,050 total (70 papers per topic, deduplicated)
-- Disciplines covered:
-  - `cs.AI` (Artificial Intelligence)
-  - `cs.CV` (Computer Vision)
-  - `cs.LG` (Machine Learning)
-  - `cs.CL` (Computation and Language)
-  - `cs.CR` (Cryptography and Security)
-  - `physics.gen-ph` (General Physics)
-  - `quant-ph` (Quantum Physics)
-  - `q-bio.BM` (Biomolecules)
-  - `q-bio.NC` (Neurons and Cognition)
-  - `econ.GN` (General Economics)
-  - `q-fin.ST` (Statistical Finance)
-  - `math.CO` (Combinatorics)
-  - `math.PR` (Probability)
-  - `stat.ML` (Machine Learning - Stat)
-  - `astro-ph.GA` (Astrophysics of Galaxies)
+---
+
+## Technologies Used
+
+* Python
+* spaCy
+* Scikit-learn
+* Gensim
+* NetworkX
+* Streamlit
+* arXiv API
+
+---
+
+## Future Scope
+
+The system architecture is designed for extension into:
+
+* Autonomous research agents
+* Real-time academic search
+* Multi-document reasoning
+* Research question answering systems
+
+---
+
+## Conclusion
+
+This project demonstrates how traditional NLP techniques can effectively analyze academic literature without relying on large language models.
+
+By integrating:
+
+* TF-IDF for document representation
+* LDA for topic discovery
+* TextRank for extractive summarization
+
+the system provides an interpretable and scalable solution for automated research understanding.
+
+---

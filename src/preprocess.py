@@ -70,7 +70,6 @@ def load_arxiv_documents():
 
                 title = result.title
                 summary = result.summary
-                # Combine title and abstract as the document text
                 text = f"{title}. {summary}"
                 text = text.replace("\n", " ").strip()
                 

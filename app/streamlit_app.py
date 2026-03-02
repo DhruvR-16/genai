@@ -14,7 +14,7 @@ PROJECT_ROOT = os.path.abspath(
 )
 sys.path.insert(0, PROJECT_ROOT)
 
-# ── Patch numpy BitGenerator unpickling for pickles saved with older numpy ──
+
 try:
     import numpy.random._pickle as _np_rng_pickle
     from numpy.random import MT19937, PCG64, SFC64, Philox
@@ -27,7 +27,6 @@ try:
     _original_ctor = _np_rng_pickle.__bit_generator_ctor
 
     def _patched_ctor(bit_generator_name):
-        # Old numpy pickled the class object; new numpy expects a string name
         if not isinstance(bit_generator_name, str):
             bit_generator_name = _CLASS_TO_NAME.get(
                 bit_generator_name,
@@ -37,9 +36,8 @@ try:
 
     _np_rng_pickle.__bit_generator_ctor = _patched_ctor
 except Exception:
-    pass  # Non-critical; worst case the user needs to re-run the pipeline
+    pass 
 
-# ── Ensure spaCy model is available before any src import tries to load it ──
 def _ensure_spacy_model(model: str = "en_core_web_sm"):
     try:
         import spacy
@@ -56,10 +54,6 @@ _ensure_spacy_model()
 from src.search import retrieve_documents
 from src.query_summarizer import summarize_query
 
-# =====================================================
-# HELPER: Load pickle
-# =====================================================
-
 PROCESSED_DIR = os.path.join(PROJECT_ROOT, "data", "processed")
 
 def load_pkl(filename):
@@ -73,9 +67,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# =====================================================
-# GLOBAL STYLES
-# =====================================================
 
 st.markdown("""
 <style>
@@ -223,10 +214,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# =====================================================
-# LOAD DATA (cached)
-# =====================================================
-
 @st.cache_resource
 def load_all_data():
     data = {}
@@ -240,9 +227,6 @@ def load_all_data():
 
 data = load_all_data()
 
-# =====================================================
-# HEADER
-# =====================================================
 
 st.markdown('<div class="main-header">📚 Intelligent Research Topic Analysis System</div>', unsafe_allow_html=True)
 st.markdown(
@@ -251,9 +235,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# =====================================================
-# TABS
-# =====================================================
+
 
 tab4, tab1, tab2, tab3 = st.tabs([
     "🔍 Search & Summary",
@@ -262,9 +244,7 @@ tab4, tab1, tab2, tab3 = st.tabs([
     "🔑 Keyword Extraction"
 ])
 
-# ───────────────────────────────────────────────────────────────────────────
-# TAB 1 — EDA
-# ───────────────────────────────────────────────────────────────────────────
+
 with tab1:
     st.header("Exploratory Data Analysis")
 
@@ -341,9 +321,7 @@ with tab1:
         plt.tight_layout()
         st.pyplot(fig4)
 
-# ───────────────────────────────────────────────────────────────────────────
-# TAB 2 — TOPIC MODELING
-# ───────────────────────────────────────────────────────────────────────────
+
 with tab2:
     st.header("LDA Topic Modeling Results")
 
@@ -383,7 +361,6 @@ with tab2:
 
     st.markdown("---")
 
-    # Coherence curve
     st.subheader("📉 Coherence Optimisation Curve")
     ks   = sorted(scores.keys())
     vals = [scores[k]["coherence"] for k in ks]
@@ -403,7 +380,7 @@ with tab2:
 
     st.markdown("---")
 
-    # Topic cards with rank
+
     st.subheader("📋 Discovered Topics — Ranked by Topic ID")
     topic_keywords = data["keywords"]["topic_keywords"]
 
@@ -420,7 +397,6 @@ with tab2:
             {badges}
         </div>""", unsafe_allow_html=True)
 
-    # Per-topic keyword charts
     st.subheader("📊 Topic Keyword Weights")
     num_topics    = lda_model.num_topics
     cols_per_row  = min(3, num_topics)
@@ -446,9 +422,6 @@ with tab2:
                 plt.tight_layout()
                 st.pyplot(fig_t)
 
-# ───────────────────────────────────────────────────────────────────────────
-# TAB 3 — KEYWORD EXTRACTION
-# ───────────────────────────────────────────────────────────────────────────
 with tab3:
     st.header("Keyword Extraction Results")
 
@@ -485,9 +458,6 @@ with tab3:
                 st.markdown(f"**{medal} {w}** — `{s:.4f}`")
                 st.progress(float(s / max_w_score))
 
-# ───────────────────────────────────────────────────────────────────────────
-# TAB 4 — SEARCH & SUMMARY
-# ───────────────────────────────────────────────────────────────────────────
 with tab4:
     st.header("Document Search & Summarization")
 
@@ -511,13 +481,11 @@ with tab4:
             st.warning("Please enter a research query.")
             st.stop()
 
-        # ── Retrieval ──
         with st.spinner("Running TF-IDF retrieval…"):
             docs, scores = retrieve_documents(query, top_k=top_k_slider)
 
         st.success(f"✅ Retrieved {len(docs)} papers using TF-IDF")
 
-        # Score distribution bar chart
         st.subheader("📊 Retrieval Score Overview")
         fig_sc, ax_sc = plt.subplots(figsize=(8, 2.5))
         colors_sc = ["#FFD700" if i == 0 else "#C0C0C0" if i == 1 else "#CD7F32" if i == 2 else "#667eea"
@@ -583,12 +551,11 @@ with tab4:
         else:
             st.info("No highlights could be extracted for this query — try broadening the search terms.")
 
-# ───────────────────────────────────────────────────────────────────────────
+
 # SIDEBAR — About
-# ───────────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("---")
-    st.markdown("### ℹ️ About")
+    st.markdown("### About")
     st.markdown("""
 This system performs **traditional NLP analysis** on ArXiv research papers.
 
@@ -599,17 +566,7 @@ This system performs **traditional NLP analysis** on ArXiv research papers.
 4. TextRank Summarization
 5. TF-IDF Retrieval
 """)
-
-    st.markdown("---")
-    st.markdown("### 🛠️ Tech Stack")
-    st.markdown("""
-- **Python**, spaCy, scikit-learn
-- **Gensim** (LDA)
-- **NetworkX** (TextRank PageRank)
-- **Streamlit** (UI)
-- **WordCloud**, Matplotlib
-""")
-
+    
     st.markdown("---")
     stats = data["eda_stats"]
     st.markdown(f"**📊 Corpus:** {stats['num_documents']:,} papers")
